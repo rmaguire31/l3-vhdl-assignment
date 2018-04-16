@@ -1,0 +1,46 @@
+%
+Copyright (C) 1991-2008 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+%
+
+GROUP CREATE A = A[31] A[30] A[29] A[28] A[27] A[26] A[25] A[24] A[23] A[22] A[21] A[20] A[19] A[18] A[17] A[16] A[15] A[14] A[13] A[12] A[11] A[10] A[9] A[8] A[7] A[6] A[5] A[4] A[3] A[2] A[1] A[0] ;
+GROUP CREATE B = B[31] B[30] B[29] B[28] B[27] B[26] B[25] B[24] B[23] B[22] B[21] B[20] B[19] B[18] B[17] B[16] B[15] B[14] B[13] B[12] B[11] B[10] B[9] B[8] B[7] B[6] B[5] B[4] B[3] B[2] B[1] B[0] ;
+GROUP CREATE S = S[32] S[31] S[30] S[29] S[28] S[27] S[26] S[25] S[24] S[23] S[22] S[21] S[20] S[19] S[18] S[17] S[16] S[15] S[14] S[13] S[12] S[11] S[10] S[9] S[8] S[7] S[6] S[5] S[4] S[3] S[2] S[1] S[0] ;
+INPUTS A B Cin;
+OUTPUTS S;
+UNIT ns;
+RADIX HEX;
+PATTERN
+   0.0> FFFFFFFF 00000000 0 = 0FFFFFFFF 
+ 100.0> 00000000 FFFFFFFF 0 = 0FFFFFFFF 
+ 200.0> FFFFFFFF 00000000 1 = 100000000 
+ 300.0> 00000000 FFFFFFFF 1 = 100000000 
+ 400.0> FFFFFFFE 00000001 0 = 0FFFFFFFF 
+ 500.0> 00000001 FFFFFFFE 0 = 0FFFFFFFF 
+ 600.0> 0000FEFF 00000100 0 = 00000FFFF 
+ 700.0> 00000100 0000FEFF 0 = 00000FFFF 
+ 800.0> FFFE0000 00010000 0 = 0FFFF0000 
+ 900.0> 00010000 FFFE0000 0 = 0FFFF0000 
+1000.0> 0EB7C59B 7684AFC2 1 = 0853C755E 
+1100.0> 3461B8DC D74E9960 1 = 10BB0523D 
+1200.0> C8B61F6E 8A6200EC 1 = 15318205B 
+1300.0> 90EF05BA EA6E48FF 0 = 17B5D4EB9 
+1400.0> ACF61AEF 9D430449 1 = 14A391F39 
+1500.0> 248E7A97 668750B1 1 = 08B15CB49 
+1600.0> 9DED1D20 3F3E892F 0 = 0DD2BA64F 
+1700.0> D8C9BFD2 A6ABC07A 0 = 17F75804C 
+1800.0> E9CDC7B8 9EA37837 1 = 188713FF0 
+1900.0> E26AA71C E555E646 0 = 1C7C08D62 
+2000.0> X X X = X 
+;
