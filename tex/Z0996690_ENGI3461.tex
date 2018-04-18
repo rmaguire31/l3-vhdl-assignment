@@ -26,9 +26,13 @@
     \usetikzlibrary{calc}
     \usetikzlibrary{external}
     	\tikzexternalize[prefix=tikz/]
+	\usetikzlibrary{fit}
 	\usetikzlibrary{positioning}
     \usetikzlibrary{quotes}
 	\usetikzlibrary{shapes.misc}
+	\pgfdeclarelayer{background}
+	\pgfdeclarelayer{foreground}
+	\pgfsetlayers{background,main,foreground}
 \usepackage{titling}
 \usepackage{xspace}
 
@@ -58,7 +62,9 @@
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
+    rulecolor=\color{codegray},
+    rulesepcolor=\color{codegray},
+    basicstyle=\ttfamily\scriptsize,
     breakatwhitespace=false,
     breaklines=true,
     captionpos=b,
@@ -68,7 +74,9 @@
     showspaces=false,
     showstringspaces=false,
     showtabs=false,
-    tabsize=4
+    tabsize=4,
+	frame=shadowbox,
+	linewidth=30em
 }
 
 \begin{document}
@@ -83,65 +91,219 @@
 
 \section{Circuits and Coding}
 
+Carry ripple adders are an example of iterative logic where the carry out of each full adder comprises the intercell signal. Iterative logic circuits are easy to implement and test, and subsequently the first adders were built this way. A downside of iterative logic is the time for the intercell signal to propagate to the last iterative unit.
+
+Carry select adders are a fast adder that aims to reduce the propagation delay by performing much of the computation in parallel. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
+
 \begin{figure}[!h]
 	\centering
-	\footnotesize
+	\hspace{-\textwidth}
 	\begin{tikzpicture}[
 		>=stealth,
 		multiplexer/.pic={
-			\coordinate (-A) at (-2em,2.5em);
-			\coordinate (-B) at (2em,2.5em);
-			\coordinate (-SEL) at (4.5em,0);
+			\coordinate (-O) at (0,0);
+			\coordinate (-A) at (-3em,2.5em);
+			\coordinate (-B) at (3em,2.5em);
+			\coordinate (-SEL) at (5em,0);
 			\coordinate (-Q) at (0,-2.5em);
-			\draw [pic actions] (-2em,-1.5em) -- (2em,-1.5em) -- (4em,1.5em) -- (-4em,1.5em) --cycle;
-			\draw [->,pic actions,fill=black,draw=black] (-A) -- (-2em,1.5em);
-			\draw [->,pic actions,fill=black,draw=black] (-B) -- (2em,1.5em);
-			\draw [->,pic actions,fill=black,draw=black] (-SEL) -- (3em,0);
+			\draw [pic actions] (-3em,-1.5em) -- (3em,-1.5em) -- (5em,1.5em) -- (-5em,1.5em) --cycle;
+			\draw [->,pic actions,fill=black,draw=black] (-A) -- (-3em,1.5em);
+			\draw [->,pic actions,fill=black,draw=black] (-B) -- (3em,1.5em);
+			\draw [->,pic actions,fill=black,draw=black] (-SEL) -- (4em,0);
 			\draw [pic actions,draw=black] (0,-1.5em) -- (-Q);
-			\node [anchor=center] (-center) {\tt\tikzpictext};
+			\node [anchor=center,text=black] (-center) {\tt\tikzpictext};
+			\begin{pgfonlayer}{foreground}
+				\node [anchor=north] at (-3em,1.5em) {\tiny\tt{A}};
+				\node [anchor=north] at (3em,1.5em) {\tiny\tt{B}};
+				\node [anchor=south] at (0,-1.5em) {\tiny\tt{Q}};
+				\node [anchor=east] at (4em,0) {\tiny\tt{SEL}};
+			\end{pgfonlayer}
 	  	},
 		adder/.pic={
-			\coordinate (-A) at (-2em,2.5em);
-			\coordinate (-B) at (0,2.5em);
-			\coordinate (-Cin) at (2em,2.5em);
-			\coordinate (-Cout) at (-1em,-3.5em);
-			\coordinate (-S) at (1em,-3.5em);
-			\draw [pic actions] (-2.5em,-2.5em) -- (2.5em,-2.5em) -- (4em,-1em) -- (4em,1.5em) -- (-4em,1.5em) -- (-4em,-1em) --cycle;
-			\draw [->,pic actions,fill=black,draw=black] (-A) -- (-2em,1.5em);
-			\draw [->,pic actions,fill=black,draw=black] (-B) -- (0,1.5em);
-			\draw [->,pic actions,fill=black,draw=black] (-Cin) -- (2em,1.5em);
-			\draw [pic actions,draw=black] (-1em,-2.5em) -- (-Cout);
-			\draw [pic actions,draw=black] (1em,-2.5em) -- (-S);
-			\node [anchor=center] (-center) {\tt\tikzpictext};
+			\coordinate (-O) at (0,0);
+			\coordinate (-A) at (-3em,2.5em);
+			\coordinate (-B) at (3em,2.5em);
+			\coordinate (-Cin) at (5em,0);
+			\coordinate (-Cout) at (-5em,0);
+			\coordinate (-S) at (0,-2.5em);
+			\draw [pic actions] (-3em,-1.5em) -- (3em,-1.5em) -- (5em,1.5em) -- (0.66em,1.5em) -- (0,0.5em) -- (-0.66em,1.5em) -- (-5em,1.5em) --cycle;
+			\draw [->,pic actions,fill=black,draw=black] (-A) -- (-3em,1.5em);
+			\draw [->,pic actions,fill=black,draw=black] (-B) -- (3em,1.5em);
+			\draw [->,pic actions,fill=black,draw=black] (-Cin) -- (4em,0);
+			\draw [pic actions,fill=black,draw=black] (-4em,0) -- (-Cout);
+			\draw [pic actions,draw=black] (0,-1.5em) -- (-S);
+			\node [anchor=center,text=black] (-center) {\tt\tikzpictext};
+			\begin{pgfonlayer}{foreground}
+				\node [anchor=north] at (-3em,1.5em) {\tiny\tt{A}};
+				\node [anchor=north] at (3em,1.5em) {\tiny\tt{B}};
+				\node [anchor=south] at (0,-1.5em) {\tiny\tt{S}};
+				\node [anchor=east] at (4em,0) {\tiny\tt{Cin}};
+				\node [anchor=west] at (-4em,0) {\tiny\tt{Cout}};
+			\end{pgfonlayer}
 	  	}
-	]
-	\pic ["mux16\_8",thick,draw=red,fill=red!30,rounded corners] (smux) {multiplexer};
+	]\scriptsize
+		\pic ["mux16\_8",thick,draw=teal,fill=teal!30,text=teal,rounded corners] (smux) {multiplexer};
 
-	\node [draw,strike out,thick,minimum size=0.1] (bus-S0) at (smux-A) {};
-	\node [draw,strike out,thick,minimum size=0.1] (bus-S1) at (smux-B) {};
-	\node [draw,strike out,thick,minimum size=0.1] (bus-S) at (smux-Q) {};
-	\node [anchor=west] at (bus-S0.east) {8};
-	\node [anchor=west] at (bus-S1.east) {8};
-	\node [anchor=west] at (bus-S.east) {8};
+		\node [draw,strike out,thick,minimum size=0.1] (bus-S0) at (smux-A) {};
+		\node [draw,strike out,thick,minimum size=0.1] (bus-S1) at (smux-B) {};
+		\node [draw,strike out,thick,minimum size=0.1] (bus-S) at (smux-Q) {};
+		\node [anchor=west] at (bus-S0.east) {8};
+		\node [anchor=west] at (bus-S1.east) {8};
+		\node [anchor=west] at (bus-S.east) {8};
 
-	\pic ["ripple\_adder8",thick,draw=red,fill=red!30,rounded corners,above=of smux-center] (ra0) {adder};
+		\pic ["ripple8",thick,draw=red,fill=red!30,text=red,rounded corners,above=3.5em of smux-A] (ra0) {adder};
 
-	\node [draw,strike out,thick,minimum size=0.1] (bus-A) at (ra0-A) {};
-	\node [draw,strike out,thick,minimum size=0.1] (bus-B) at (ra0-B) {};
-	\node [anchor=west] at (bus-A.east) {8};
-	\node [anchor=west] at (bus-B.east) {8};
+		\node [draw,strike out,thick,minimum size=0.1] (bus-A) at (ra0-A) {};
+		\node [draw,strike out,thick,minimum size=0.1] (bus-B) at (ra0-B) {};
+		\node [anchor=west] at (bus-A.east) {8};
+		\node [anchor=west] at (bus-B.east) {8};
 
+		\pic ["ripple8",thick,draw=red,fill=red!30,text=red,rounded corners,above=9.5em of smux-B] (ra1) {adder};
+
+		\node [draw,strike out,thick,minimum size=0.1] (bus-A) at (ra1-A) {};
+		\node [draw,strike out,thick,minimum size=0.1] (bus-B) at (ra1-B) {};
+		\node [anchor=west] at (bus-A.east) {8};
+		\node [anchor=west] at (bus-B.east) {8};
+
+		\pic ["mux2\_1",thick,draw=teal,fill=teal!30,text=teal,rounded corners,rotate=-90,transform shape,left=6.5em of $(ra0-Cout)!0.5!(ra1-Cout)$] (cmux) {multiplexer};
+
+		\node [draw,fill=white,thick,rectangle,rounded corners,below=1em of ra0-Cin] (0) {\tt{0}};
+		\node [draw,fill=white,thick,rectangle,rounded corners,below=1em of ra1-Cin] (1) {\tt{1}};
+
+		\node [text=blue,above=8em of ra0-A] (unit1-A) {\tt{A}};
+		\node [text=blue,above=2em of ra1-B] (unit1-B) {\tt{B}};
+		\node [text=blue,right=2em of smux-SEL] (unit1-Cin) {\tt{Cin}};
+
+		\node [text=blue,left=0.1em of cmux-Q] (unit1-Cout) {\tt{Cout}};
+		\node [text=blue,below=1em of smux-Q] (unit1-S) {\tt{S}};
+
+		\begin{pgfonlayer}{background}
+			\node [draw=blue,fill=blue!30,thick,rectangle,rounded corners,inner sep=0,fit=(unit1-A) (unit1-B) (unit1-Cin) (unit1-Cout) (unit1-S)] (unit1) {};
+
+			\node [anchor=north west,rounded corners,rectangle] at (unit1.north west) {\tt{csa\_unit8}};
+
+			\draw [thick] (ra0-Cin) -- (0);
+			\draw [thick] (ra1-Cin) -- (1);
+
+			\draw [thick] (ra0-A) -- (unit1-A);
+			\draw [thick] (ra1-A) -- ($(ra1-A) + (0,1em)$) -| (unit1-A);
+
+			\draw [thick] (ra0-B) -- ($(ra0-B) + (0,1em)$) -| (unit1-B);
+			\draw [thick] (ra1-B) -- (unit1-B);
+
+			\draw [thick] (ra0-S) -- (smux-A);
+			\draw [thick] (ra1-S) -- (smux-B);
+
+			\draw [thick] (ra0-Cout) -- (cmux-B);
+			\draw [thick] (ra1-Cout) -- (cmux-A);
+
+			\draw [thick] (cmux-SEL) |- (unit1-Cin);
+			\draw [thick] (smux-SEL) -- (unit1-Cin);
+
+			\draw [->,thick] (cmux-Q) -- (unit1-Cout);
+			\draw [->,thick] (smux-Q) -- (unit1-S);
+		\end{pgfonlayer}
+
+		\pic ["ripple8",thick,draw=red,fill=red!30,text=red,rounded corners,right=29.5em of unit1-Cout] (unit0) {adder};
+
+		\pic ["csa\_unit8",thick,draw=blue,fill=blue!30,text=blue,rounded corners,left=6em of unit1-Cout] (unit2) {adder};
+		\pic ["csa\_unit8",thick,draw=blue,fill=blue!30,text=blue,rounded corners,left=6em of unit2-Cout] (unit3) {adder};
+
+		\node [above=8em of unit3-A] (A3) {\tiny\tt{[31:24]}};
+		\node [above=8em of unit2-A] (A2) {\tiny\tt{[23:16]}};
+		\node [above=3em of unit1-A.south] (A1) {\tiny\tt{[15:8]}};
+		\node [above=8em of unit0-A] (A0) {\tiny\tt{[7:0]}};
+		\node [left=3em of A3.south] (A-end) {};
+		\node [draw,thick,rectangle,rounded corners,right=2em of A0.south] (A-start) {\tt{A}};
+
+		\node [above=10em of unit3-B] (B3) {\tiny\tt{[31:24]}};
+		\node [above=10em of unit2-B] (B2) {\tiny\tt{[23:16]}};
+		\node [above=5em of unit1-B.south] (B1) {\tiny\tt{[15:8]}};
+		\node [above=10em of unit0-B] (B0) {\tiny\tt{[7:0]}};
+		\node [left=3em of B3.south] (B-end) {};
+		\node [draw,thick,rectangle,rounded corners,right=2em of B0.south] (B-start) {\tt{B}};
+
+		\node [below=15.5em of unit3-Cout] (S4) {\tiny\tt{[32]}};
+		\node [below=13em of unit3-S] (S3) {\tiny\tt{[31:24]}};
+		\node [below=13em of unit2-S] (S2) {\tiny\tt{[23:16]}};
+		\node [below=3em of unit1-S.north] (S1) {\tiny\tt{[15:8]}};
+		\node [below=13em of unit0-S] (S0) {\tiny\tt{[7:0]}};
+		\node [draw,thick,rectangle,rounded corners,left=3em of S4.north] (S-end) {\tt{S}};
+		\node [right=2em of S0.north] (S-start) {};
+
+		\node [draw,thick,rectangle,rounded corners,anchor=west] at (unit0-Cin) {\tt{Cin}};
+
+		\node [draw,strike out,thick,minimum size=0.1] at (unit0-A) (bus-A) {};
+		\node [draw,strike out,thick,minimum size=0.1] at (unit0-B) (bus-B) {};
+		\node [draw,strike out,thick,minimum size=0.1,above=1em of S0,anchor=center] (bus-S) {};
+		\node [anchor=west] at (bus-A.east) {8};
+		\node [anchor=west] at (bus-B.east) {8};
+		\node [anchor=west] at (bus-S.east) {8};
+
+		\node [draw,strike out,thick,minimum size=0.1,above=1em of unit1-A,anchor=center] (bus-A) {};
+		\node [draw,strike out,thick,minimum size=0.1,above=1em of unit1-B,anchor=center] (bus-B) {};
+		\node [draw,strike out,thick,minimum size=0.1,above=1em of S1,anchor=center] (bus-S) {};
+		\node [anchor=west] at (bus-A.east) {8};
+		\node [anchor=west] at (bus-B.east) {8};
+		\node [anchor=west] at (bus-S.east) {8};
+
+		\node [draw,strike out,thick,minimum size=0.1] at (unit2-A) (bus-A) {};
+		\node [draw,strike out,thick,minimum size=0.1] at (unit2-B) (bus-B) {};
+		\node [draw,strike out,thick,minimum size=0.1,above=1em of S2,anchor=center] (bus-S) {};
+		\node [anchor=west] at (bus-A.east) {8};
+		\node [anchor=west] at (bus-B.east) {8};
+		\node [anchor=west] at (bus-S.east) {8};
+
+		\node [draw,strike out,thick,minimum size=0.1] at (unit3-A) (bus-A) {};
+		\node [draw,strike out,thick,minimum size=0.1] at (unit3-B) (bus-B) {};
+		\node [draw,strike out,thick,minimum size=0.1,above=1em of S3,anchor=center] (bus-S) {};
+		\node [anchor=west] at (bus-A.east) {8};
+		\node [anchor=west] at (bus-B.east) {8};
+		\node [anchor=west] at (bus-S.east) {8};
+
+		\node [draw,strike out,thick,minimum size=0.1,right=1em of A-end] (bus-A) {};
+		\node [draw,strike out,thick,minimum size=0.1,right=1em of B-end] (bus-B) {};
+		\node [draw,strike out,thick,minimum size=0.1,right=1em of S-end] (bus-S) {};
+		\node [anchor=north] at (bus-A.south) {32};
+		\node [anchor=north] at (bus-B.south) {32};
+		\node [anchor=north] at (bus-S.south) {33};
+
+		\begin{pgfonlayer}{background}
+			\draw [->,ultra thick] (A-start) -- (A-end);
+			\draw [->,ultra thick] (B-start) -- (B-end);
+			\draw [->,ultra thick] (S-start) -- (S-end);
+
+			\draw [->,thick] (unit0-Cout) |- (unit1-Cin);
+			\draw [thick] (unit1-Cout) -- (unit2-Cin);
+			\draw [thick] (unit2-Cout) -- (unit3-Cout);
+
+			\draw [thick] (A0) -- (unit0-A);
+			\draw [->,thick] (A1) -- (unit1-A);
+			\draw [thick] (A2) -- (unit2-A);
+			\draw [thick] (A3) -- (unit3-A);
+
+			\draw [thick] (B0) -- (unit0-B);
+			\draw [->,thick] (B1) -- (unit1-B);
+			\draw [thick] (B2) -- (unit2-B);
+			\draw [thick] (B3) -- (unit3-B);
+
+			\draw [->,thick] (unit0-S) -- (S0);
+			\draw [->,thick] (unit1-S) -- (S1);
+			\draw [->,thick] (unit2-S) -- (S2);
+			\draw [->,thick] (unit3-S) -- (S3);
+			\draw [->,thick] (unit3-Cout) -- (S4);
+		\end{pgfonlayer}
 	\end{tikzpicture}
-	\caption{Diagram of carry ripple adder.}
+	\hspace{-\textwidth}
+	\caption{Diagram of a 32-bit carry select adder.}
+	\label{fig:csa}
 \end{figure}
 
-\begin{figure}[!h]
-	\centering
-	\footnotesize
-	\begin{tikzpicture}
-	\end{tikzpicture}
-	\caption{Diagram of carry select adder.}
-\end{figure}
+The 32-bit computation is split into 8-bit arithmetic computations which are executed in parallel. In each carry select unit, short ripples adders compute sum candidates for both possible carry in values. Meanwhile the first intercell carry signal is computed by the inital short ripple adder. The intercell carry signals then propagate through the multiplexors selecting the correct sum and carry out candidates, rather than through the ripple adders.
+
+The propagation delay of the carry select adder is only as long as the 8-bit ripple adder and 3 multiplexors, much faster in theory than the propagation delay of a 32-bit ripple adder.
+
+Apparent drawbacks of the carry select adder compared to the carry ripple adder include the increased complexity, size and power requirements due to duplicating most of the full adders and including multiplexors.
 
 \begin{figure}[!h]
 	\centering
@@ -151,7 +313,7 @@
 		vhdl/.style={draw=red,fill=red!30,thick,rectangle,rounded corners,minimum size=3em},
 		block/.style={draw=blue,fill=blue!30,thick,rectangle,rounded corners,minimum size=3em},
 		inv/.style={draw=none,fill=none,rectangle,minimum size=3em}
-	]
+	]\scriptsize
 		\node [vhdl] (full_adder) {\texttt{full\_adder.vhd}};
 		\node [vhdl,above=of full_adder] (ripple_adder8) {\texttt{ripple\_adder8.vhd}};
 		\node [inv,above=of ripple_adder8] (inv) {};
@@ -165,16 +327,16 @@
 		\draw [->,thick] (mux16_8) -- (mux2_1);
 		\draw [->,thick] (csa_unit8) -- (mux16_8);
 		\draw [->,thick] (csa_unit8)
-			-- ($(csa_unit8.south)!0.3!(mux16_8.north)$)
+			-- ($(csa_unit8.south)!0.7!(mux16_8.north)$)
 			-| ($(ripple_adder8.north) + (2em,0)$);
 		\draw [->,thick] (csa_unit8)
-			-- ($(csa_unit8.south)!0.3!(mux16_8.north)$)
+			-- ($(csa_unit8.south)!0.7!(mux16_8.north)$)
 			-| ($(mux16_8.east) + (1em,0)$)
-			|- ($(mux16_8.south)!0.3!(mux2_1.north) + (1em,0)$)
+			|- ($(mux16_8.south)!0.7!(mux2_1.north) + (1em,0)$)
 			-- ($(mux2_1.north) + (1em,0)$);
 		\draw [->,thick] (csa32) -- (csa_unit8);
 		\draw [->,thick] (csa32)
-			-- ($(csa32.south)!0.3!(csa_unit8.north)$)
+			-- ($(csa32.south)!0.7!(csa_unit8.north)$)
 			-| ($(ripple_adder8.north) + (1em,0)$);
 
 		\draw [->,thick] (cra32) -- (ripple_adder8);
@@ -184,95 +346,80 @@
 	\label{fig:hierarchy}
 \end{figure}
 
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\lstinputlisting[
+			caption={\texttt{full\_adder\_architecture} declaration in \texttt{full\_adder.vhd}},
+			label={lst:full_adder},
+			language=VHDL,
+			style=mystyle,
+			firstline=17,
+			firstnumber=17,
+		]{../quartus/full_adder.vhd}
+	\end{minipage}
+\end{center}
 
-\begin{lstlisting}[
-	caption={\texttt{full\_adder\_architecture} declaration in \texttt{full\_adder.vhd}},
-	label={lst:full_adder},
-	language=VHDL,
-	style=mystyle
-]
--- architecture
-ARCHITECTURE full_adder_architecture OF full_adder IS
-BEGIN
-	Cout <= ((A xor B) and Cin) or (A and B);
-	S <= (A xor B) xor Cin;
-END;
-\end{lstlisting}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\lstinputlisting[
+			caption={\texttt{mux2\_1\_architecture} declaration in \texttt{mux2\_1.vhd}},
+			label={lst:mux2_1},
+			language=VHDL,
+			style=mystyle,
+			firstline=16,
+			firstnumber=16,
+		]{../quartus/mux2_1.vhd}
+	\end{minipage}
+\end{center}
 
-\begin{lstlisting}[
-	caption={\texttt{mux2\_1\_architecture} declaration in \texttt{mux2\_1.vhd}},
-	label={lst:mux2_1},
-	language=VHDL,
-	style=mystyle
-]
--- architecture
-ARCHITECTURE mux2_1_architecture OF mux2_1 IS
-BEGIN
-	Q <= (A and not SEL) or (B and SEL);
-END mux2_1_architecture;
-\end{lstlisting}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\lstinputlisting[
+			language=VHDL,
+			style=mystyle,
+			firstnumber=26,
+			firstline=26,
+			lastline=26
+		]{../quartus/ripple_adder8.vhd}
+		\lstinputlisting[
+			label={lst:ripple_adder8},
+			language=VHDL,
+			style=mystyle,
+			firstnumber=27,
+			firstline=27,
+			lastline=37
+		]{../quartus/ripple_adder8.vhd}
+		\lstinputlisting[
+			caption={Snippet showing one of eight chained \texttt{full\_adder} components mapped in \texttt{ripple\_adder8.vhd} architecture declaration.},
+			label={lst:ripple_adder8},
+			language=VHDL,
+			style=mystyle,
+			firstnumber=63,
+			firstline=63,
+			lastline=68
+		]{../quartus/ripple_adder8.vhd}
+	\end{minipage}
+\end{center}
 
-
-\begin{lstlisting}[
-	caption={Snippet showing one of eight parallel \texttt{mux2\_1} components mapped in \texttt{mux16\_8.vhd} architecture declaration.},
-	label={lst:mux16_8},
-	language=VHDL,
-	style=mystyle
-]
-	-- map 8 muxes with common select S
-	mux0 : mux2_1 port map (A => A(0),
-							B => B(0),
-							SEL => SEL,
-							Q => Q(0));			
-\end{lstlisting}
-
-\begin{lstlisting}[
-	caption={Snippet showing one of eight chained \texttt{full\_adder} components mapped in \texttt{ripple\_adder8.vhd} architecture declaration.},
-	label={lst:ripple_adder8},
-	language=VHDL,
-	style=mystyle
-]
-	SIGNAL C : std_logic_vector(6 downto 0);
-BEGIN
-	-- chain 8 full adders using intermediate carry signals
-	fa0 : full_adder PORT MAP (	A => A(0),
-								B => B(0),
-								Cin => Cin,
-								Cout => C(0),
-								S => S(0));
-\end{lstlisting}
-
-\begin{lstlisting}[
-	caption={Snippet showing how the two ripple adders were mapped to the intermediate candidate signals before being selected using multiplexors and the carry in port in \texttt{csa\_unit8.vhd} architecture declaration.},
-	label={lst:csa_unit8},
-	language=VHDL,
-	style=mystyle
-]
-	-- candidates calculated by each ripple adder
-	SIGNAL S0 : std_logic_vector(7 downto 0);
-	SIGNAL Cout0 : std_logic;
-	SIGNAL S1 : std_logic_vector(7 downto 0);
-	SIGNAL Cout1 : std_logic;
-BEGIN
-	ra0 : ripple_adder8 PORT MAP (	A => A,
-									B => B,
-									Cin => '0',
-									Cout => Cout0,
-									S => S0);
-	ra1 : ripple_adder8 PORT MAP (	A => A,
-									B => B,
-									Cin => '1',
-									Cout => Cout1,
-									S => S1);
-	smux : mux16_8 PORT MAP (A => S0,
-							 B => S1,
-							 SEL => Cin,
-							 Q => S);
-	cmux : mux2_1 PORT MAP ( A => Cout0,
-							 B => Cout1,
-							 SEL => Cin,
-							 Q => Cout);
-\end{lstlisting}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\lstinputlisting[
+			language=VHDL,
+			style=mystyle,
+			firstnumber=44,
+			firstline=44,
+			lastline=47
+		]{../quartus/csa_unit8.vhd}
+		\lstinputlisting[
+			caption={Snippet showing how the two ripple adders were mapped to the intermediate candidate signals before being selected using multiplexors and the carry in port in \texttt{csa\_unit8.vhd} architecture declaration.},
+			label={lst:csa_unit8},
+			language=VHDL,
+			style=mystyle,
+			firstnumber=48,
+			firstline=48,
+		]{../quartus/csa_unit8.vhd}
+	\end{minipage}
+\end{center}
 
 
 \begin{figure}[!h]
