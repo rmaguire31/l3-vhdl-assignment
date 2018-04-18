@@ -93,7 +93,7 @@
 
 Carry ripple adders are an example of iterative logic where the carry out of each full adder comprises the intercell signal. Iterative logic circuits are easy to implement and test, and subsequently the first adders were built this way. A downside of iterative logic is the time for the intercell signal to propagate to the last iterative unit.
 
-Carry select adders are a fast adder that aims to reduce the propagation delay by performing much of the computation in parallel. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
+Carry select adders are fast adders which aim to reduce propagation delay by performing much of the computation in parallel. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
 
 \begin{figure}[!h]
 	\centering
@@ -299,11 +299,13 @@ Carry select adders are a fast adder that aims to reduce the propagation delay b
 	\label{fig:csa}
 \end{figure}
 
-The 32-bit computation is split into 8-bit arithmetic computations which are executed in parallel. In each carry select unit, short ripples adders compute sum candidates for both possible carry in values. Meanwhile the first intercell carry signal is computed by the inital short ripple adder. The intercell carry signals then propagate through the multiplexors selecting the correct sum and carry out candidates, rather than through the ripple adders.
+The 32-bit addition is split into 8-bit units which are executed in parallel. In each carry select unit, short ripples adders compute sum candidates for both possible carry in values. Simultaneously, the first intercell carry signal is computed by the inital short ripple adder. The intercell carry signals then propagate through the multiplexors selecting the correct sum and carry out candidates, rather than through the ripple adders.
 
 The propagation delay of the carry select adder is only as long as the 8-bit ripple adder and 3 multiplexors, much faster in theory than the propagation delay of a 32-bit ripple adder.
 
 Apparent drawbacks of the carry select adder compared to the carry ripple adder include the increased complexity, size and power requirements due to duplicating most of the full adders and including multiplexors.
+
+Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 32-bit CSA in Figure~\ref{fig:csa} and a 32-bit carry ripple adder for comparison. These were implemented in \Altera \QuartusII.
 
 \begin{figure}[!h]
 	\centering
@@ -345,6 +347,8 @@ Apparent drawbacks of the carry select adder compared to the carry ripple adder 
 	\caption{Hierarchy of entity declarations.}
 	\label{fig:hierarchy}
 \end{figure}
+
+Figure~\ref{fig:hierarchy} evidences how the CSA and CRA shared as much VHDL as possible to avoid discrepencies in implementation efficiency. Only the top-level files used the \QuartusII block schematic file format.
 
 \begin{center}
 	\begin{minipage}{\textwidth}

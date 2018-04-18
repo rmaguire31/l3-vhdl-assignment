@@ -44,4 +44,8 @@ set_global_assignment -name BDF_FILE csa32.bdf
 set_global_assignment -name SIMULATION_MODE TIMING
 set_global_assignment -name VECTOR_WAVEFORM_FILE test.vwf
 set_global_assignment -name SIMULATION_WITH_AUTO_GLITCH_FILTERING NEVER
+set_global_assignment -name VECTOR_TABLE_OUTPUT_FILE ../csa32.sim.time.tbl
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE csa32.sim.cvwf
+set_global_assignment -name VECTOR_TABLE_OUTPUT_FILE csa32.sim.tbl
+set_global_assignment -name VECTOR_TABLE_OUTPUT_FILE ../csa32.sim.tbl
 set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE test.vwf
