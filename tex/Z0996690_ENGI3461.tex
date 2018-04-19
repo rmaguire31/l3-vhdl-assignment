@@ -57,13 +57,13 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},
+    % backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     rulecolor=\color{codegray},
-    rulesepcolor=\color{codegray},
+    % rulesepcolor=\color{codegray},
     basicstyle=\ttfamily\scriptsize,
     breakatwhitespace=false,
     breaklines=true,
@@ -75,8 +75,8 @@
     showstringspaces=false,
     showtabs=false,
     tabsize=4,
-	frame=shadowbox,
-	linewidth=30em
+	frame=single,
+	frameround=tttt
 }
 
 \begin{document}
@@ -91,9 +91,9 @@
 
 \section{Circuits and Coding}
 
-Carry ripple adders are an example of iterative logic where the carry out of each full adder comprises the intercell signal. Iterative logic circuits are easy to implement and test, and subsequently the first adders were built this way. A downside of iterative logic is the time for the intercell signal to propagate to the last iterative unit.
+Carry Ripple Adders (CRA) are an example of iterative logic where the carry out of each full adder comprises the intercell signal. Iterative logic circuits are easy to implement and test, and subsequently the first adders were built this way. A downside of iterative logic is the time for the intercell signal to propagate to the last iterative unit.
 
-Carry select adders are fast adders which aim to reduce propagation delay by performing much of the computation in parallel. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
+Carry Select Adders (CSA) are fast adders which aim to reduce propagation delay by performing much of the computation in parallel. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
 
 \begin{figure}[!h]
 	\centering
@@ -141,7 +141,7 @@ Carry select adders are fast adders which aim to reduce propagation delay by per
 				\node [anchor=west] at (-4em,0) {\tiny\tt{Cout}};
 			\end{pgfonlayer}
 	  	}
-	]\scriptsize
+	]\tiny
 		\pic ["mux16\_8",thick,draw=teal,fill=teal!30,text=teal,rounded corners] (smux) {multiplexer};
 
 		\node [draw,strike out,thick,minimum size=0.1] (bus-S0) at (smux-A) {};
@@ -299,13 +299,7 @@ Carry select adders are fast adders which aim to reduce propagation delay by per
 	\label{fig:csa}
 \end{figure}
 
-The 32-bit addition is split into 8-bit units which are executed in parallel. In each carry select unit, short ripples adders compute sum candidates for both possible carry in values. Simultaneously, the first intercell carry signal is computed by the inital short ripple adder. The intercell carry signals then propagate through the multiplexors selecting the correct sum and carry out candidates, rather than through the ripple adders.
-
-The propagation delay of the carry select adder is only as long as the 8-bit ripple adder and 3 multiplexors, much faster in theory than the propagation delay of a 32-bit ripple adder.
-
-Apparent drawbacks of the carry select adder compared to the carry ripple adder include the increased complexity, size and power requirements due to duplicating most of the full adders and including multiplexors.
-
-Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 32-bit CSA in Figure~\ref{fig:csa} and a 32-bit carry ripple adder for comparison. These were implemented in \Altera \QuartusII.
+Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 32-bit CSA in Figure~\ref{fig:csa} and a 32-bit carry ripple adder for comparison. Both The CSA and CRA were implemented in \Altera \QuartusII and shared as much VHDL as possible to avoid discrepencies in implementation efficiency. Only the top-level files used the \QuartusII block schematic file format.
 
 \begin{figure}[!h]
 	\centering
@@ -348,36 +342,42 @@ Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 
 	\label{fig:hierarchy}
 \end{figure}
 
-Figure~\ref{fig:hierarchy} evidences how the CSA and CRA shared as much VHDL as possible to avoid discrepencies in implementation efficiency. Only the top-level files used the \QuartusII block schematic file format.
+Listings~\ref{lst:full_adder}~and~\ref{lst:mux2_1} include the logic expression used to implement the \texttt{full\_adder} and \texttt{mux2\_1} design entities.
 
 \begin{center}
-	\begin{minipage}{\textwidth}
+	\hspace{-\textwidth}%
+	\begin{minipage}{0.6\textwidth}
 		\lstinputlisting[
-			caption={\texttt{full\_adder\_architecture} declaration in \texttt{full\_adder.vhd}},
+			caption={Architecture declaration in \texttt{full\_adder.vhd}},
 			label={lst:full_adder},
 			language=VHDL,
 			style=mystyle,
 			firstline=17,
 			firstnumber=17,
 		]{../quartus/full_adder.vhd}
-	\end{minipage}
-\end{center}
-
-\begin{center}
-	\begin{minipage}{\textwidth}
+	\end{minipage}%
+	\hspace{2em}%
+	\begin{minipage}{0.51\textwidth}
 		\lstinputlisting[
-			caption={\texttt{mux2\_1\_architecture} declaration in \texttt{mux2\_1.vhd}},
+			caption={Architecture declaration in \texttt{mux2\_1.vhd}},
 			label={lst:mux2_1},
 			language=VHDL,
 			style=mystyle,
 			firstline=16,
 			firstnumber=16,
 		]{../quartus/mux2_1.vhd}
-	\end{minipage}
+	\end{minipage}%
+	\hspace{-\textwidth}
+
 \end{center}
 
+The 16-to-8 multiplexor was constructed using eight parallel \texttt{mux2\_1} components, mapped to the elements of \texttt{std\_logic\_vector(7 downto 1)} type ports. A similar approach in Listing~\ref{lst:ripple_adder8} shows how intercell signals were used to connect \texttt{full\_adder} components together to build the 8-bit ripple adder design entity.
+
+Signals were also used to represent the candidate sum and carry out values from the two 8-bit ripple adders detailed in the unit cells in Figure~\ref{fig:csa}. The VHDL implementation of the CSA unit cell is described in Listing~\ref{lst:csa_unit8}.
+
 \begin{center}
-	\begin{minipage}{\textwidth}
+	\hspace{-\textwidth}%
+	\begin{minipage}{0.51\textwidth}
 		\lstinputlisting[
 			language=VHDL,
 			style=mystyle,
@@ -402,11 +402,9 @@ Figure~\ref{fig:hierarchy} evidences how the CSA and CRA shared as much VHDL as 
 			firstline=63,
 			lastline=68
 		]{../quartus/ripple_adder8.vhd}
-	\end{minipage}
-\end{center}
-
-\begin{center}
-	\begin{minipage}{\textwidth}
+	\end{minipage}%
+	\hspace{2em}%
+	\begin{minipage}{0.57\textwidth}
 		\lstinputlisting[
 			language=VHDL,
 			style=mystyle,
@@ -422,9 +420,12 @@ Figure~\ref{fig:hierarchy} evidences how the CSA and CRA shared as much VHDL as 
 			firstnumber=48,
 			firstline=48,
 		]{../quartus/csa_unit8.vhd}
-	\end{minipage}
+	\end{minipage}%
+	\hspace{-\textwidth}
+
 \end{center}
 
+The top level design entities are shown in schematic in Figure~\ref{fig:top-level}
 
 \begin{figure}[!h]
 	\centering
@@ -444,6 +445,12 @@ Figure~\ref{fig:hierarchy} evidences how the CSA and CRA shared as much VHDL as 
 \end{figure}
 
 \section{Speed and Operation}
+
+The 32-bit addition is split into 8-bit units which are executed in parallel. In each carry select unit, short ripple adders compute sum candidates for both possible carry in values. Simultaneously, the first intercell carry signal is computed by the inital adder. The intercell carry signals then propagate through the multiplexors selecting the correct sum and carry out candidates, rather than through the adders.
+
+The propagation delay of the CSA is only as long as the 8-bit ripple adder and 3 multiplexors, much faster in theory than the propagation delay of a 32-bit ripple adder.
+
+Apparent drawbacks of the CSA compared to the CRA include the increased complexity, size and power requirements due to duplicating most of the full adders and including multiplexors.
 
 \section{FPGA Implementation}
 
