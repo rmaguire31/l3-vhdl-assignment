@@ -1,0 +1,43 @@
+Copyright (C) 1991-2008 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+
+csa32 Analysis & Synthesis Resource Usage Summary
+
+Resource	Usage
+Total logic elements	105
+-- Combinational with no register	105
+-- Register only	0
+-- Combinational with a register	0
+	
+Logic element usage by number of LUT inputs	
+-- 4 input functions	30
+-- 3 input functions	52
+-- 2 input functions	23
+-- 1 input functions	0
+-- 0 input functions	0
+	
+Logic elements by mode	
+-- normal mode	105
+-- arithmetic mode	0
+-- qfbk mode	0
+-- register cascade mode	0
+-- synchronous clear/load mode	0
+-- asynchronous clear/load mode	0
+	
+Total registers	0
+I/O pins	98
+Maximum fan-out node	ripple_adder8:ra0|full_adder:fa7|Cout~72
+Maximum fan-out	9
+Total fan-out	355
+Average fan-out	1.75
