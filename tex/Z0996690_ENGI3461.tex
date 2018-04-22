@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage[english]{babel}
 \usepackage[style=ieee,backend=bibtex]{biblatex}
+	\bibliography{ref.bib}
 \usepackage{booktabs}
 \usepackage[font={small},labelfont=sc]{caption}
 \usepackage[hidelinks]{hyperref}
@@ -84,7 +85,7 @@
 \begin{@twocolumnfalse} \centering
     \renewcommand{\abstractname}{\large Abstract}
     \begin{abstract}
-        This report describes the design, implementation and evalation of a 32-bit Carry Select Adder (CSA). The design was compared to a 32-bit Carry Ripple Adder (CRA) by compiling an FPGA: both circuits for the \Altera Cyclone EP1C20F400C7 target and running timing simulations using \Altera \QuartusII. The CSA and CRA had a worst case propagation delay of \SI{27.588}{\ns} and \SI{58.125}{\ns} respectively; and required 105 an FPGA: and 64 combinational elements to realise on the target.
+        This report describes the design, implementation and evalation of a 32-bit Carry Select Adder (CSA). The design was compared to a 32-bit Carry Ripple Adder (CRA) using timing simulations for the \Altera Cyclone EP1C20F400C7 target device. The CSA and CRA had a worst case propagation delay of \SI{27.588}{\ns} and \SI{58.125}{\ns} respectively; and required 105 and 64 combinational elements to realise on the target FPGA.
     \end{abstract}
 \end{@twocolumnfalse}
 
@@ -92,7 +93,7 @@
 
 Carry Ripple Adders (CRA) are an example of iterative logic where the carry out of each full adder comprises the intercell signal. Iterative logic circuits are easy to implement and test, and subsequently the first adders were built this way. A downside of iterative logic is the time for the intercell signal to propagate to the last iterative unit.
 
-Carry Select Adders (CSA) are fast adders which aim to reduce propagation delay by performing much of the computation in parallel. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
+Carry Select Adders (CSA) are fast adders which aim to reduce propagation delay by performing much of the computation in parallel, first proposed in 1962 by Bedrij~\cite{bedrij1962carry}. A schematic of a 32-bit CSA is detailed in Figure~\ref{fig:csa}.
 
 \begin{figure}[!h]
 	\centering
@@ -294,7 +295,7 @@ Carry Select Adders (CSA) are fast adders which aim to reduce propagation delay 
 	\label{fig:csa}
 \end{figure}
 
-Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 32-bit CSA in Figure~\ref{fig:csa} and a 32-bit carry ripple adder for comparison. Both The CSA and CRA were implemented in \Altera \QuartusII and shared as much VHDL as possible to avoid discrepencies in implementation efficiency. Only the top-level files used the \QuartusII block schematic file format.
+Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 32-bit CSA in Figure~\ref{fig:csa} and a 32-bit CRA which was used as a reference. Both The CSA and CRA were implemented in \Altera \QuartusII and shared as much VHDL as possible to avoid discrepencies in implementation efficiency. Only the top-level files used the \QuartusII block schematic file format.
 
 \begin{figure}[!h]
 	\centering
@@ -337,7 +338,7 @@ Figure~\ref{fig:hierarchy} illustrates the hierarchy of files used to build the 
 	\label{fig:hierarchy}
 \end{figure}
 
-Listings~\ref{lst:full_adder}~and~\ref{lst:mux2_1} include the logic expression used to implement the \texttt{full\_adder} and \texttt{mux2\_1} design entities.
+Listings~\ref{lst:full_adder}~and~\ref{lst:mux2_1} include the logic used to implement the \texttt{full\_adder} and \texttt{mux2\_1} entities.
 
 \begin{center}
 	\hspace{-\textwidth}%
@@ -366,9 +367,9 @@ Listings~\ref{lst:full_adder}~and~\ref{lst:mux2_1} include the logic expression 
 
 \end{center}
 
-The 16-to-8 multiplexer was constructed using eight parallel \texttt{mux2\_1} components, mapped to the elements of \texttt{std\_logic\_vector(7 downto 1)} type ports. A similar approach was used to create the 8-bit ripple adder out of \texttt{full\_adder} components, although the carry in and carry out were mapped to elements of \texttt{std\_logic\_vector(6 downto 0)} type intercell signals. Signals were also used to represent the candidate sum and carry out values from the two 8-bit ripple adders detailed in the \texttt{csa\_unit8} cells in Figure~\ref{fig:csa}.
+The 16-to-8 multiplexer was constructed using eight parallel \texttt{mux2\_1} components, mapped to the elements of \texttt{std\_logic\_vector(7 downto 1)} type ports. A similar approach was used to create the 8-bit ripple adder out of \texttt{full\_adder} components. The carry in and carry out were mapped to intermediate \texttt{std\_logic} signals. Signals were also used to represent the candidate sum and carry out values from the 8-bit ripple adders detailed in the \texttt{csa\_unit8} cells in Figure~\ref{fig:csa}.
 
-The top-level design entities shown in the schematics in Figure~\ref{fig:top-level} were built out of \texttt{ripple\_adder8} and \texttt{csa\_unit8} components.
+The top-level entities shown in Figure~\ref{fig:top-level} were built out of \texttt{ripple\_adder8} and \texttt{csa\_unit8} components.
 
 \begin{figure}[!h]
 	\centering
@@ -389,7 +390,7 @@ The top-level design entities shown in the schematics in Figure~\ref{fig:top-lev
 
 \section{Speed and Operation}
 
-The verify the correct operation of the CSA circuit under investigate and CRA circuit for reference, a functional simulation was run on the each project. The circuits were compiled for an FPGA: the \Altera Cyclone EP1C20F400C7 target device.
+The verify the correct operation of the CSA circuit under investigation and the CRA reference circuit, a functional simulation was run on the each project. The circuits were compiled for an FPGA: the \Altera Cyclone EP1C20F400C7.
 
 Figure~\ref{fig:func-sim} displays the results of the simulation, with the inputs designed to achieve \SI{100}{\percent} coverage of 0/1 and 1/0 transitions for all nodes. The circuit outputs and coverage statistics were verified in the simulation report.
 
@@ -817,7 +818,7 @@ In Figure~\ref{fig:csa-time}, the propagation delay for the least significant un
 
 Observing Figure~\ref{fig:csa}, apparent drawbacks of the CSA compared to the CRA include the increased complexity, size and power requirements due to duplicating most of the full adders and including multiplexors.
 
-Indeed, Table~\ref{tab:char} lists the number of combinational elements required to build each project, alongside the achieved performance, using data extracted from the analysis \& synthesis report.
+Indeed, Table~\ref{tab:char} lists the number of combinational elements required to build each project, alongside the achieved performance, using data extracted from the analysis and synthesis report.
 
 \begin{table}[!h]
 	\centering
@@ -874,9 +875,9 @@ Indeed, Table~\ref{tab:char} lists the number of combinational elements required
 
 For the \SI{211}{\percent} increase in performance, \SI{164}{\percent} more combinational elements elements were required and the complexity of these logic elements was also more varied. Using more logic elements leads to greater power requirements because more nodes are switched, draining current.
 
-Some complexity and power can be mitigated by the deploying the circuit on a custom ASIC rather than an FPGA. An ASIC can be more efficient by using specific gates rather than generic LUTs, and reducing the length of interconnects between combinational elements. The shorter interconnects in an ASIC also lead to shorter propagation times, resulting in better peformance overall.
+Some complexity and power can be mitigated by the deploying the circuit on a custom ASIC rather than an FPGA, as suggested by Kuon et al.~\cite{kuon2007measuring}. An ASIC is more efficient by using specific gates rather than generic LUTs, and reducing the length of interconnects between combinational elements. The shorter interconnects also lead to shorter propagation times, resulting in better peformance overall.
 
-However, the time to market to develop, test and manufacture an ASIC is greater than an FPGA implementation. The time and smaller production volume means the unit cost to deploy an ASIC reflect the performance boosts, so ASICs are reserved for the most demanding applications.
+However, the time to market to develop, test and manufacture an ASIC is greater than an FPGA implementation~\cite{kuon2007measuring}. The time and smaller production volume means the unit cost to deploy an ASIC reflect the performance boosts, so ASICs are reserved for the most demanding applications.
 
 \printbibliography
 
